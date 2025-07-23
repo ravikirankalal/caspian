@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Separator } from './ui/separator';
-import { Menu, Home, Settings, LogOut } from 'lucide-react';
+import { Menu, Home, Settings, LogOut, Notebook } from 'lucide-react';
 
 interface SidebarLayoutProps {
   children: React.ReactNode;
@@ -42,7 +42,8 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
   };
 
   const navigationItems = [
-    { icon: Home, label: 'Home', href: '/' },
+    { icon: Home, label: 'Home', href: '/home' },
+    { icon: Notebook, label: 'Notes', href: '/notes' },
     { icon: Settings, label: 'Settings', href: '/settings' },
   ];
 
