@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/card';
-import { Label } from './ui/label';
 
 interface Note {
   id: string;
@@ -16,6 +16,8 @@ const Notes: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState({ title: '', content: '' });
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [isCreateNoteFocused, setCreateNoteFocused] = useState(false);
+  const createNoteRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -25,11 +27,24 @@ const Notes: React.FC = () => {
     fetchNotes();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (createNoteRef.current && !createNoteRef.current.contains(event.target as Node)) {
+        setCreateNoteFocused(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleAddNote = async () => {
-    if (newNote.title.trim() === '' || newNote.content.trim() === '') return;
+    if (newNote.title.trim() === '' && newNote.content.trim() === '') return;
     const docRef = await addDoc(collection(db, 'notes'), newNote);
     setNotes([...notes, { id: docRef.id, ...newNote }]);
     setNewNote({ title: '', content: '' });
+    setCreateNoteFocused(false);
   };
 
   const handleDeleteNote = async (id: string) => {
@@ -46,51 +61,34 @@ const Notes: React.FC = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto">
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>{editingNote ? 'Edit Note' : 'Create Note'}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              type="text"
-              value={editingNote ? editingNote.title : newNote.title}
-              onChange={e => 
-                editingNote 
-                  ? setEditingNote({ ...editingNote, title: e.target.value })
-                  : setNewNote({ ...newNote, title: e.target.value })
-              }
-              placeholder="Note title"
+      <div ref={createNoteRef} className="mb-8 mx-auto max-w-xl">
+        <Card className="shadow-lg">
+          <CardContent className="p-4">
+            {isCreateNoteFocused && (
+              <Input
+                type="text"
+                value={newNote.title}
+                onChange={e => setNewNote({ ...newNote, title: e.target.value })}
+                placeholder="Title"
+                className="mb-2 border-none focus:ring-0 shadow-none"
+              />
+            )}
+            <Textarea
+              value={newNote.content}
+              onChange={e => setNewNote({ ...newNote, content: e.target.value })}
+              onFocus={() => setCreateNoteFocused(true)}
+              placeholder="Take a note..."
+              className="border-none focus:ring-0 shadow-none resize-none"
             />
-          </div>
-          <div>
-            <Label htmlFor="content">Content</Label>
-            <Input
-              id="content"
-              type="text"
-              value={editingNote ? editingNote.content : newNote.content}
-              onChange={e => 
-                editingNote 
-                  ? setEditingNote({ ...editingNote, content: e.target.value })
-                  : setNewNote({ ...newNote, content: e.target.value })
-              }
-              placeholder="Note content"
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-end gap-2">
-          {editingNote ? (
-            <>
-              <Button onClick={handleUpdateNote}>Update</Button>
-              <Button onClick={() => setEditingNote(null)} variant="outline">Cancel</Button>
-            </>
-          ) : (
-            <Button onClick={handleAddNote}>Add Note</Button>
-          )}
-        </CardFooter>
-      </Card>
+            {isCreateNoteFocused && (
+              <div className="flex justify-end gap-2 mt-2">
+                <Button onClick={handleAddNote}>Add</Button>
+                <Button onClick={() => setCreateNoteFocused(false)} variant="ghost">Close</Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {notes.map(note => (
@@ -108,6 +106,34 @@ const Notes: React.FC = () => {
           </Card>
         ))}
       </div>
+
+      {/* Edit Note Modal (could be a dialog) */}
+      {editingNote && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <Card className="w-full max-w-xl">
+            <CardHeader>
+              <CardTitle>Edit Note</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Input
+                type="text"
+                value={editingNote.title}
+                onChange={e => setEditingNote({ ...editingNote, title: e.target.value })}
+                placeholder="Title"
+              />
+              <Textarea
+                value={editingNote.content}
+                onChange={e => setEditingNote({ ...editingNote, content: e.target.value })}
+                placeholder="Take a note..."
+              />
+            </CardContent>
+            <CardFooter className="flex justify-end gap-2">
+              <Button onClick={handleUpdateNote}>Update</Button>
+              <Button onClick={() => setEditingNote(null)} variant="outline">Cancel</Button>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
