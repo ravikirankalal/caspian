@@ -13,6 +13,7 @@ import {
   DialogFooter,
   DialogTrigger,
 } from './ui/dialog';
+import Masonry from 'react-masonry-css';
 
 interface Note {
   id: string;
@@ -67,6 +68,12 @@ const Notes: React.FC = () => {
     setEditingNote(null);
   };
 
+  const breakpointColumnsObj = {
+    default: 3,
+    1100: 2,
+    700: 1
+  };
+
   return (
     <Dialog onOpenChange={(isOpen) => !isOpen && setEditingNote(null)}>
       <div className="w-full max-w-6xl mx-auto">
@@ -99,7 +106,10 @@ const Notes: React.FC = () => {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className="masonry-grid"
+          columnClassName="masonry-grid_column">
           {notes.map(note => (
             <Card key={note.id}>
               <CardHeader>
@@ -116,7 +126,7 @@ const Notes: React.FC = () => {
               </CardFooter>
             </Card>
           ))}
-        </div>
+        </Masonry>
 
         {editingNote && (
             <DialogContent>
