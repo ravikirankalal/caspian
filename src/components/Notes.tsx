@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { firestoreDB } from '../firebase';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Label } from './ui/label';
 
 export const db = firestoreDB;
-
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<{ id: string; text: string }[]>([]);
   const [newNote, setNewNote] = useState('');
@@ -37,43 +40,45 @@ const Notes: React.FC = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Notes</h1>
-      <div className="flex mb-4">
-        <input
-          type="text"
-          value={newNote}
-          onChange={e => setNewNote(e.target.value)}
-          className="border p-2 flex-grow"
-          placeholder="New note"
-        />
-        <button onClick={handleAddNote} className="bg-blue-500 text-white p-2 ml-2">Add</button>
-      </div>
-      <ul>
-        {notes.map(note => (
-          <li key={note.id} className="flex items-center mb-2">
-            {editingNote && editingNote.id === note.id ? (
-              <input
-                type="text"
-                value={editingNote.text}
-                onChange={e => setEditingNote({ ...editingNote, text: e.target.value })}
-                className="border p-2 flex-grow"
-              />
-            ) : (
-              <span className="flex-grow">{note.text}</span>
-            )}
-            <div className="flex">
+    <Card className="w-full max-w-3xl mx-auto">
+      <CardHeader>
+        <CardTitle>Notes</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex gap-2 mb-4">
+          <Input
+            type="text"
+            value={newNote}
+            onChange={e => setNewNote(e.target.value)}
+            placeholder="New note"
+          />
+          <Button onClick={handleAddNote}>Add</Button>
+        </div>
+        <div className="space-y-4">
+          {notes.map(note => (
+            <div key={note.id} className="flex items-center gap-2">
               {editingNote && editingNote.id === note.id ? (
-                <button onClick={handleUpdateNote} className="bg-green-500 text-white p-2 mr-2">Update</button>
+                <Input
+                  type="text"
+                  value={editingNote.text}
+                  onChange={e => setEditingNote({ ...editingNote, text: e.target.value })}
+                />
               ) : (
-                <button onClick={() => setEditingNote(note)} className="bg-yellow-500 text-white p-2 mr-2">Edit</button>
+                <Label className="flex-grow">{note.text}</Label>
               )}
-              <button onClick={() => handleDeleteNote(note.id)} className="bg-red-500 text-white p-2">Delete</button>
+              <div className="flex gap-2">
+                {editingNote && editingNote.id === note.id ? (
+                  <Button onClick={handleUpdateNote} variant="outline">Update</Button>
+                ) : (
+                  <Button onClick={() => setEditingNote(note)} variant="outline">Edit</Button>
+                )}
+                <Button onClick={() => handleDeleteNote(note.id)} variant="destructive">Delete</Button>
+              </div>
             </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
