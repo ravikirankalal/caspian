@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import Masonry from 'react-masonry-css';
+import RichTextEditor from './RichTextEditor';
 
 interface Note {
   id: string;
@@ -23,7 +24,7 @@ interface Note {
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [newNote, setNewNote] = useState({ title: '', content: '' });
+  const [newNote, setNewNote] = useState({ title: '', content: '<p></p>' }); // Initialize with empty paragraph
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [isCreateNoteFocused, setCreateNoteFocused] = useState(false);
   const createNoteRef = useRef<HTMLDivElement>(null);
@@ -49,10 +50,13 @@ const Notes: React.FC = () => {
   }, []);
 
   const handleAddNote = async () => {
-    if (newNote.title.trim() === '' && newNote.content.trim() === '') return;
+    // Check if title is empty OR if content is empty (considering <p></p> as empty)
+    if (newNote.title.trim() === '' && (newNote.content.trim() === '<p></p>' || newNote.content.trim() === '')) {
+      return;
+    }
     const docRef = await addDoc(collection(db, 'notes'), newNote);
     setNotes([...notes, { id: docRef.id, ...newNote }]);
-    setNewNote({ title: '', content: '' });
+    setNewNote({ title: '', content: '<p></p>' }); // Reset to empty paragraph
     setCreateNoteFocused(false);
   };
 
@@ -89,12 +93,14 @@ const Notes: React.FC = () => {
                   className="mb-2 border-none focus:ring-0 shadow-none"
                 />
               )}
-              <Textarea
-                value={newNote.content}
-                onChange={e => setNewNote({ ...newNote, content: e.target.value })}
-                onFocus={() => setCreateNoteFocused(true)}
+              <RichTextEditor
+                content={newNote.content}
+                onChange={content => setNewNote({ ...newNote, content })}
+                onFocus={() => {
+                  console.log("RichTextEditor focused!");
+                  setCreateNoteFocused(true);
+                }}
                 placeholder="Take a note..."
-                className="border-none focus:ring-0 shadow-none resize-none"
               />
               {isCreateNoteFocused && (
                 <div className="flex justify-end gap-2 mt-2">
@@ -116,7 +122,7 @@ const Notes: React.FC = () => {
                 <CardTitle>{note.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>{note.content}</p>
+                <div dangerouslySetInnerHTML={{ __html: note.content }} />
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
                 <DialogTrigger asChild>
@@ -140,9 +146,9 @@ const Notes: React.FC = () => {
                 onChange={e => setEditingNote({ ...editingNote, title: e.target.value })}
                 placeholder="Title"
               />
-              <Textarea
-                value={editingNote.content}
-                onChange={e => setEditingNote({ ...editingNote, content: e.target.value })}
+              <RichTextEditor
+                content={editingNote.content}
+                onChange={content => editingNote && setEditingNote({ ...editingNote, content })}
                 placeholder="Take a note..."
               />
             </div>
