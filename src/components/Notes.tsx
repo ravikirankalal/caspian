@@ -5,6 +5,14 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/card';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogFooter,
+  DialogTrigger,
+} from './ui/dialog';
 
 interface Note {
   id: string;
@@ -60,61 +68,62 @@ const Notes: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <div ref={createNoteRef} className="mb-8 mx-auto max-w-xl">
-        <Card className="shadow-lg">
-          <CardContent className="p-4">
-            {isCreateNoteFocused && (
-              <Input
-                type="text"
-                value={newNote.title}
-                onChange={e => setNewNote({ ...newNote, title: e.target.value })}
-                placeholder="Title"
-                className="mb-2 border-none focus:ring-0 shadow-none"
+    <Dialog onOpenChange={(isOpen) => !isOpen && setEditingNote(null)}>
+      <div className="w-full max-w-6xl mx-auto">
+        <div ref={createNoteRef} className="mb-8 mx-auto max-w-xl">
+          <Card className="shadow-lg">
+            <CardContent className="p-4">
+              {isCreateNoteFocused && (
+                <Input
+                  type="text"
+                  value={newNote.title}
+                  onChange={e => setNewNote({ ...newNote, title: e.target.value })}
+                  placeholder="Title"
+                  className="mb-2 border-none focus:ring-0 shadow-none"
+                />
+              )}
+              <Textarea
+                value={newNote.content}
+                onChange={e => setNewNote({ ...newNote, content: e.target.value })}
+                onFocus={() => setCreateNoteFocused(true)}
+                placeholder="Take a note..."
+                className="border-none focus:ring-0 shadow-none resize-none"
               />
-            )}
-            <Textarea
-              value={newNote.content}
-              onChange={e => setNewNote({ ...newNote, content: e.target.value })}
-              onFocus={() => setCreateNoteFocused(true)}
-              placeholder="Take a note..."
-              className="border-none focus:ring-0 shadow-none resize-none"
-            />
-            {isCreateNoteFocused && (
-              <div className="flex justify-end gap-2 mt-2">
-                <Button onClick={handleAddNote}>Add</Button>
-                <Button onClick={() => setCreateNoteFocused(false)} variant="ghost">Close</Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {notes.map(note => (
-          <Card key={note.id}>
-            <CardHeader>
-              <CardTitle>{note.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>{note.content}</p>
+              {isCreateNoteFocused && (
+                <div className="flex justify-end gap-2 mt-2">
+                  <Button onClick={handleAddNote}>Add</Button>
+                  <Button onClick={() => setCreateNoteFocused(false)} variant="ghost">Close</Button>
+                </div>
+              )}
             </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-              <Button onClick={() => setEditingNote(note)} variant="outline">Edit</Button>
-              <Button onClick={() => handleDeleteNote(note.id)} variant="destructive">Delete</Button>
-            </CardFooter>
           </Card>
-        ))}
-      </div>
+        </div>
 
-      {/* Edit Note Modal (could be a dialog) */}
-      {editingNote && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <Card className="w-full max-w-xl">
-            <CardHeader>
-              <CardTitle>Edit Note</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {notes.map(note => (
+            <Card key={note.id}>
+              <CardHeader>
+                <CardTitle>{note.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>{note.content}</p>
+              </CardContent>
+              <CardFooter className="flex justify-end gap-2">
+                <DialogTrigger asChild>
+                  <Button onClick={() => setEditingNote(note)} variant="outline">Edit</Button>
+                </DialogTrigger>
+                <Button onClick={() => handleDeleteNote(note.id)} variant="destructive">Delete</Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+
+        {editingNote && (
+            <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Note</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
               <Input
                 type="text"
                 value={editingNote.title}
@@ -126,15 +135,15 @@ const Notes: React.FC = () => {
                 onChange={e => setEditingNote({ ...editingNote, content: e.target.value })}
                 placeholder="Take a note..."
               />
-            </CardContent>
-            <CardFooter className="flex justify-end gap-2">
+            </div>
+            <DialogFooter>
               <Button onClick={handleUpdateNote}>Update</Button>
               <Button onClick={() => setEditingNote(null)} variant="outline">Cancel</Button>
-            </CardFooter>
-          </Card>
-        </div>
-      )}
-    </div>
+            </DialogFooter>
+          </DialogContent>
+        )}
+      </div>
+    </Dialog>
   );
 };
 
