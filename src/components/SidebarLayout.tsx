@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
@@ -14,6 +14,7 @@ interface SidebarLayoutProps {
 const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -63,7 +64,11 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
               <a
                 key={item.label}
                 href={item.href}
-                className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+                className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  location.pathname === item.href
+                    ? 'bg-accent text-accent-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                }`}
               >
                 <item.icon className="w-5 h-5 mr-3" />
                 {item.label}
@@ -142,7 +147,11 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
                       key={item.label}
                       href={item.href}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+                      className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  location.pathname === item.href
+                    ? 'bg-accent text-accent-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                }`}
                     >
                       <item.icon className="w-5 h-5 mr-3" />
                       {item.label}

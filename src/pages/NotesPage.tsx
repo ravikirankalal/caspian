@@ -1,11 +1,12 @@
 import React from 'react';
 import Notes from '../components/Notes';
+import SidebarLayout from '../components/SidebarLayout';
 
 const NotesPage: React.FC = () => {
   return (
-    <div className="h-screen w-screen flex justify-center items-center">
+    <SidebarLayout>
       <Notes />
-    </div>
+    </SidebarLayout>
   );
 };
 
