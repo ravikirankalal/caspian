@@ -23,19 +23,20 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '100vh',
-      flexDirection: 'column',
-      gap: '20px'
-    }}>
-      <h1>Login</h1>
-      <p>Welcome to Caspian - Please log in to continue</p>
-      <Button onClick={handleGoogleSignIn} size="lg">
-        Sign in with Google
-      </Button>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground px-4">
+      <div className="text-center space-y-6 max-w-md w-full">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold text-foreground">Welcome to Caspian</h1>
+          <p className="text-muted-foreground text-lg">Please sign in to continue</p>
+        </div>
+        <Button 
+          onClick={handleGoogleSignIn} 
+          size="lg"
+          className="w-full"
+        >
+          Sign in with Google
+        </Button>
+      </div>
     </div>
   );
 };
