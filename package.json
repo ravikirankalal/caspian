@@ -22,5 +22,8 @@
   "homepage": "https://github.com/ravikirankalal/caspian#readme",
   "devDependencies": {
     "vite": "^7.0.5"
+  },
+  "dependencies": {
+    "firebase": "^12.0.0"
   }
 }

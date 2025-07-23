@@ -33,3 +33,26 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
+
+#login, #logout {
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  background: #4285f4;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+#logout {
+  background: #d14836;
+}
+#user {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+#avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
