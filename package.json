@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/ravikirankalal/caspian/issues"
   },
-  "homepage": "https://github.com/ravikirankalal/caspian#readme"
+  "homepage": "https://github.com/ravikirankalal/caspian#readme",
+  "devDependencies": {
+    "vite": "^7.0.5"
+  }
 }
