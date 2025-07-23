@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Separator } from './ui/separator';
+import { ThemeToggle } from './ThemeToggle';
 import { Menu, Home, Settings, LogOut, Notebook } from 'lucide-react';
 
 interface SidebarLayoutProps {
@@ -94,15 +95,18 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
                 </p>
               </div>
             </div>
-            <Button
-              onClick={handleSignOut}
-              variant="outline"
-              size="sm"
-              className="w-full justify-start"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <div className="space-y-2">
+              <ThemeToggle className="w-full justify-start" />
+              <Button
+                onClick={handleSignOut}
+                variant="outline"
+                size="sm"
+                className="w-full justify-start"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -159,8 +163,9 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
                   ))}
                 </nav>
 
-                {/* Sign Out Button */}
-                <div className="p-4 border-t border-border">
+                {/* Theme Toggle and Sign Out */}
+                <div className="p-4 border-t border-border space-y-2">
+                  <ThemeToggle className="w-full justify-start" />
                   <Button
                     onClick={handleSignOut}
                     variant="outline"
