@@ -41,13 +41,17 @@ const Notes: React.FC = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (createNoteRef.current && !createNoteRef.current.contains(event.target as Node)) {
         setCreateNoteFocused(false);
+        // Optionally clear the new note if it's empty when unfocused
+        if (newNote.title.trim() === '' && (newNote.content.trim() === '<p></p>' || newNote.content.trim() === '')) {
+          setNewNote({ title: '', content: '<p></p>' });
+        }
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [newNote]); // Depend on newNote to re-evaluate the condition
 
   const handleAddNote = async () => {
     // Check if title is empty OR if content is empty (considering <p></p> as empty)
@@ -84,30 +88,43 @@ const Notes: React.FC = () => {
         <div ref={createNoteRef} className="mb-8 mx-auto max-w-xl">
           <Card className="shadow-lg">
             <CardContent className="p-4">
-              {isCreateNoteFocused && (
+              <div
+                className={`grid transition-all duration-300 ease-in-out overflow-hidden ${
+                  isCreateNoteFocused ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                }`}
+              >
                 <Input
                   type="text"
                   value={newNote.title}
                   onChange={e => setNewNote({ ...newNote, title: e.target.value })}
                   placeholder="Title"
-                  className="mb-2 border-none focus:ring-0 shadow-none"
+                  className="mb-2 border-none focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none min-h-0"
                 />
-              )}
+              </div>
               <RichTextEditor
                 content={newNote.content}
                 onChange={content => setNewNote({ ...newNote, content })}
-                onFocus={() => {
-                  console.log("RichTextEditor focused!");
-                  setCreateNoteFocused(true);
-                }}
+                onFocus={() => setCreateNoteFocused(true)}
                 placeholder="Take a note..."
               />
-              {isCreateNoteFocused && (
-                <div className="flex justify-end gap-2 mt-2">
+              <div
+                className={`grid transition-all duration-300 ease-in-out overflow-hidden ${
+                  isCreateNoteFocused ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                }`}
+              >
+                <div className="flex justify-end gap-2 mt-2 min-h-0">
                   <Button onClick={handleAddNote}>Add</Button>
-                  <Button onClick={() => setCreateNoteFocused(false)} variant="ghost">Close</Button>
+                  <Button 
+                    onClick={() => {
+                      setCreateNoteFocused(false);
+                      setNewNote({ title: '', content: '<p></p>' }); // Clear new note on close
+                    }}
+                    variant="ghost"
+                  >
+                    Close
+                  </Button>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         </div>

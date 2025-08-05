@@ -5,7 +5,9 @@ import { ThemeProvider } from './context/ThemeContext';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import NotesPage from './pages/NotesPage';
+import FileUploadPage from './pages/FileUploadPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import { Toaster } from './components/ui/toaster';
 
 const App: React.FC = () => {
   return (
@@ -17,9 +19,11 @@ const App: React.FC = () => {
             <Route element={<ProtectedRoute />}>
               <Route path="/home" element={<HomePage />} />
               <Route path="/notes" element={<NotesPage />} />
+              <Route path="/files" element={<FileUploadPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
+        <Toaster />
       </AuthProvider>
     </ThemeProvider>
   );
